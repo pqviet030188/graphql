@@ -1,14 +1,13 @@
 import {
   CreateImageMutationArgs,
-  CreateVideoMutationArgs
+  CreateVideoMutationArgs,
+  QueryMediaByIdArgs
 } from "../dtos";
 import { Media, MediaWithDetails, Post, User, Video, Image } from "../models";
 import { GraphQLContext } from "../utils";
 
 export const mediaResolvers = {
   Media: {
-    post: (parent: Media) => Post.findByPk(parent.postId),
-
     __resolveType(parent: Media) {
       switch (parent.type) {
         case "IMAGE":
@@ -32,12 +31,12 @@ export const mediaResolvers = {
   },
 
   Query: {
-    posts: () => Post.findAll(),
+    media: (_: unknown, args: QueryMediaByIdArgs) => Media.findByPk(args.id),
     allMedia: () => Media.findAll(),
   },
 
   Mutation: {
-    CreateImage: async (
+    createImage: async (
       _: unknown,
       args: CreateImageMutationArgs,
       context: GraphQLContext
@@ -59,7 +58,7 @@ export const mediaResolvers = {
       });
     },
 
-    CreateVideo: async (
+    createVideo: async (
       _: unknown,
       args: CreateVideoMutationArgs,
       context: GraphQLContext

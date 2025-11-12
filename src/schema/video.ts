@@ -9,5 +9,7 @@ export const videoTypeDefs = gql`
     mimetype: String
     duration: Int
     resolution: String
+    postId: Int!
+    Post: Post!
   }
 `;

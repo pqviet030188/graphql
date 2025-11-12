@@ -18,7 +18,7 @@ export class Video extends Model<VideoAttributes, VideoCreationAttributes> imple
 
 Video.init(
   {
-    id: { type: DataTypes.INTEGER.UNSIGNED, primaryKey: true, references: { model: Media, key: "id" } },
+    id: { type: DataTypes.INTEGER, primaryKey: true },
     duration: DataTypes.INTEGER,
     resolution: DataTypes.STRING,
   },

@@ -6,3 +6,4 @@ export * from "./QueryPostByIdArgs";
 export * from "./UpdatePostMutationArgs";
 export * from "./CreateImageMutationArgs";
 export * from "./CreateVideoMutationArgs";
+export * from "./QueryMediaByIdArgs";

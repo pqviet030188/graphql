@@ -19,9 +19,8 @@ export class Image extends Model<ImageAttributes, ImageCreationAttributes> imple
 Image.init(
   {
     id: {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER,
       primaryKey: true,
-      references: { model: Media, key: "id" },
     },
     width: DataTypes.INTEGER,
     height: DataTypes.INTEGER,

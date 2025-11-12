@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "dotenv ts-node-dev --respawn src/server.ts"
+    "dev": "dotenv -e .env -- ts-node-dev --respawn src/server.ts"
   },
   "keywords": [],
   "author": "",

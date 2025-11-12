@@ -9,5 +9,7 @@ export const imageTypeDefs = gql`
     type: MediaType!
     width: Int
     height: Int
+    postId: Int!
+    Post: Post!
   }
 `;
