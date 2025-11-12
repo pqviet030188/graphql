@@ -17,6 +17,15 @@ DB_PASS=
 DB_NAME=
 JWT_SECRET=
 NODE_ENV=development
+```
 
 
 Create a `test.env` file for testing:
+```env
+DB_HOST=
+DB_USER=
+DB_PASS=
+DB_NAME=
+JWT_SECRET=
+NODE_ENV=test
+```
