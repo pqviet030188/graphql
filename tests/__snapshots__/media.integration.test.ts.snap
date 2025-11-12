@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Media API creates and queries an image 1`] = `
+[
+  {
+    "height": 600,
+    "id": "1",
+    "width": 800,
+  },
+]
+`;
