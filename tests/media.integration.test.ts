@@ -1,35 +1,21 @@
-import { ApolloServer } from "apollo-server-express";
-import { typeDefs } from "../src/schema";
-import { resolvers } from "../src/resolvers";
+import { createApp } from "../src/createApp";
 import request from "supertest";
 import express from "express";
-import { Config } from "../src/config";
 import { Media, Image, Client, Post, User, Video } from "../src/models";
 import bcrypt from "bcryptjs";
 import { sequelize } from "../src/database";
-import { RestClientWithRefreshToken } from "../src/dtos";
-import {
-  authMiddleware,
-  getToken,
-  getTokenFromRefreshToken,
-} from "../src/auth";
 
 let app: express.Application;
 let post: Post;
 
 beforeAll(async () => {
-  const dbName = Config.mysql.database;
   await sequelize.sync({ force: true }); // reset DB
   const hashed = await bcrypt.hash("demo_secret", 10);
-  try {
-    await Client.create({
-      name: "Demo App",
-      clientId: "demo_client",
-      clientSecret: hashed,
-    });
-  } catch (err) {
-    console.error("Error creating demo client:", err);
-  }
+  await Client.create({
+    name: "Demo App",
+    clientId: "demo_client",
+    clientSecret: hashed,
+  });
 
   const testUser = await User.create({
     email: "testuser@gmail.com",
@@ -42,33 +28,7 @@ beforeAll(async () => {
     authorId: testUser.id,
   });
 
-  app = express();
-  app.use(express.json());
-
-  app.post("/oauth/token", async (req, res) => {
-    const { grant_type } = req.body as RestClientWithRefreshToken;
-
-    if (grant_type === "client_credentials") {
-      return await getToken(req, res);
-    }
-
-    if (grant_type === "refresh_token") {
-      return await getTokenFromRefreshToken(req, res);
-    }
-
-    res.status(400).json({ error: "Invalid grant_type" });
-  });
-
-  app.use(authMiddleware);
-
-  const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-    context: ({ req }) => ({ client: (req as any).client }),
-  });
-
-  await server.start();
-  server.applyMiddleware({ app, path: "/graphql" });
+  app = await createApp();
 });
 
 const createImage = async (media: Media, image: Image) => {
@@ -143,7 +103,7 @@ describe("Media API", () => {
 
     expect(tokenResponse?.status).toBe(200);
     const accessToken = tokenResponse.body.accessToken;
-    
+
     const response = await request(app)
       .post("/graphql")
       .set("Content-Type", "application/json")
