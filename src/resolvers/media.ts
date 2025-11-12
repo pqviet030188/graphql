@@ -8,6 +8,7 @@ import { GraphQLContext } from "../utils";
 
 export const mediaResolvers = {
   Media: {
+    post: (parent: Media) => Post.findByPk(parent.postId),
     __resolveType(parent: Media) {
       switch (parent.type) {
         case "IMAGE":
@@ -23,16 +24,22 @@ export const mediaResolvers = {
   Image: {
     width: (parent: MediaWithDetails) => parent.imageDetails?.width,
     height: (parent: MediaWithDetails) => parent.imageDetails?.height,
+    post: (parent: MediaWithDetails) => Post.findByPk(parent.postId),
   },
 
   Video: {
     duration: (parent: MediaWithDetails) => parent.videoDetails?.duration,
     resolution: (parent: MediaWithDetails) => parent.videoDetails?.resolution,
+    post: (parent: MediaWithDetails) => Post.findByPk(parent.postId),
   },
 
   Query: {
-    media: (_: unknown, args: QueryMediaByIdArgs) => Media.findByPk(args.id),
-    allMedia: () => Media.findAll(),
+    media: (_: unknown, args: QueryMediaByIdArgs) => Media.findByPk(args.id, {
+      include: ["imageDetails", "videoDetails"], 
+    }),
+    allMedia: () => Media.findAll({
+      include: ["imageDetails", "videoDetails"], 
+    }),
   },
 
   Mutation: {
@@ -49,13 +56,16 @@ export const mediaResolvers = {
         mimetype: args.mimetype,
         url: args.url,
         type: "IMAGE",
+        postId: args.postId,
       });
 
-      return Image.create({
+      await Image.create({
         id: media.id,
         width: args.width,
         height: args.height,
       });
+
+      return Media.findByPk(media.id, { include: ["imageDetails"] });
     },
 
     createVideo: async (
@@ -70,14 +80,17 @@ export const mediaResolvers = {
         filename: args.filename,
         mimetype: args.mimetype,
         url: args.url,
-        type: "IMAGE",
+        postId: args.postId,
+        type: "VIDEO",
       });
 
-      return Video.create({
+      await Video.create({
         id: media.id,
         duration: args.duration,
         resolution: args.resolution,
       });
+
+      return Media.findByPk(media.id, { include: ["videoDetails"] });
     },
   },
 };

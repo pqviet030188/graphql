@@ -5,11 +5,12 @@ export const videoTypeDefs = gql`
     id: ID!
     url: String!
     filename: String!
-    type: MediaType!
     mimetype: String
+    type: MediaType!
+    postId: Int!
+    post: Post!
+
     duration: Int
     resolution: String
-    postId: Int!
-    Post: Post!
   }
 `;

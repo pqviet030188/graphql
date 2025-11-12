@@ -7,9 +7,10 @@ export const imageTypeDefs = gql`
     filename: String!
     mimetype: String
     type: MediaType!
+    postId: Int!
+    post: Post!
+
     width: Int
     height: Int
-    postId: Int!
-    Post: Post!
   }
 `;

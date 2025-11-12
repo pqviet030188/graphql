@@ -20,7 +20,6 @@ async function start() {
 
   const app = express();
   app.use(express.json());
-  app.use(authMiddleware);
 
   app.post("/oauth/token", async (req, res) => {
     const { grant_type } = req.body as RestClientWithRefreshToken
@@ -35,6 +34,8 @@ async function start() {
 
     res.status(400).json({ error: "Invalid grant_type" });
   });
+
+  app.use(authMiddleware);
 
   app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
