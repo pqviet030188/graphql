@@ -1,28 +1,89 @@
-import bcrypt from "bcryptjs";
-import { CreatePostMutationArgs, CreateUserMutationArgs, QueryPostByIdArgs, QueryUserByIdArgs, UpdatePostMutationArgs } from "../dtos";
+import {
+  CreatePostMutationArgs,
+  QueryPostByIdArgs,
+  UpdatePostMutationArgs,
+} from "../dtos";
 import { Media, Post, User } from "../models";
-import { GraphQLContext } from "../utils";
+import { GraphQLContext } from "../dtos";
+import { addToCache, belongsToGetEntity, hasManyGetEntities } from "../utils";
+import { Op } from "sequelize";
 
 export const postResolvers = {
   Post: {
-    author: (parent: Post) => User.findByPk(parent.authorId),
-    media: (parent: Post) => Media.findAll({ where: { postId: parent.id } }),
+    author: async (parent: Post, _2: unknown, context: GraphQLContext) => {
+      return await belongsToGetEntity(
+        parent,
+        context,
+        "postCache",
+        "userCache",
+        "authorId",
+        (authorIds: number[]) => {
+          return User.findAll({
+            where: {
+              id: {
+                [Op.in]: authorIds,
+              },
+            },
+          });
+        }
+      );
+    },
+    media: async (parent: Post, _: unknown, context: GraphQLContext) => {
+      return await hasManyGetEntities(
+        parent,
+        context,
+        "postCache",
+        "mediaCache",
+        "postId",
+        (postIds: number[]) => {
+          return Media.findAll({
+            where: {
+              postId: {
+                [Op.in]: postIds,
+              },
+            },
+          });
+        }
+      );
+    },
   },
 
   Query: {
-    posts: () => Post.findAll(),
-    post: (_: unknown, args: QueryPostByIdArgs) => Post.findByPk(args.id),
+    posts: async (_1: unknown, _2: unknown, context: GraphQLContext) => {
+      const posts = await Post.findAll();
+      posts?.length > 0 && addToCache(posts, context, "postCache");
+      return posts;
+    },
+    post: async (
+      _: unknown,
+      args: QueryPostByIdArgs,
+      context: GraphQLContext
+    ) => {
+      const post = await Post.findByPk(args.id);
+      post != null && addToCache([post], context, "postCache");
+      return post;
+    },
   },
 
   Mutation: {
-    createPost: async (_: unknown, args: CreatePostMutationArgs, context: GraphQLContext) => {
+    createPost: async (
+      _: unknown,
+      args: CreatePostMutationArgs,
+      context: GraphQLContext
+    ) => {
       if (!context.client) {
         throw new Error("Unauthorized");
       }
-      return Post.create({ ...args });
+      const post = await Post.create({ ...args });
+      post != null && addToCache([post], context, "postCache");
+      return post;
     },
 
-    updatePost: async (_: unknown, args: UpdatePostMutationArgs, context: GraphQLContext) => {
+    updatePost: async (
+      _: unknown,
+      args: UpdatePostMutationArgs,
+      context: GraphQLContext
+    ) => {
       if (!context.client) {
         throw new Error("Unauthorized");
       }
@@ -30,10 +91,16 @@ export const postResolvers = {
       if (!post) {
         throw new Error("Post not found");
       }
-      return post.update({ ...args });
+      const updatedPost = await post.update({ ...args });
+      updatedPost != null && addToCache([updatedPost], context, "postCache");
+      return updatedPost;
     },
 
-    deletePost: async (_: unknown, args: QueryPostByIdArgs, context: GraphQLContext) => {
+    deletePost: async (
+      _: unknown,
+      args: QueryPostByIdArgs,
+      context: GraphQLContext
+    ) => {
       if (!context.client) {
         throw new Error("Unauthorized");
       }
@@ -41,7 +108,8 @@ export const postResolvers = {
       if (!post) {
         throw new Error("Post not found");
       }
-      return post.destroy();
-    }
+      await post.destroy();
+      return true;
+    },
   },
 };

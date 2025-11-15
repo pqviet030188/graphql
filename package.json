@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "dev": "dotenv -e .env -- ts-node-dev --respawn src/server.ts",
-    "test": "dotenv -e test.env -- jest --runInBand "
+    "test": "dotenv -e test.env -- jest --runInBand"
   },
   "keywords": [],
   "author": "",

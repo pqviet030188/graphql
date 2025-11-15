@@ -13,11 +13,6 @@ export class Media extends Model {
   declare postId?: number;
 }
 
-export interface MediaWithDetails extends Media {
-  imageDetails?: Image;
-  videoDetails?: Video;
-}
-
 Media.init(
   {
     id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },

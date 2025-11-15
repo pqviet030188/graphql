@@ -7,3 +7,4 @@ export * from "./UpdatePostMutationArgs";
 export * from "./CreateImageMutationArgs";
 export * from "./CreateVideoMutationArgs";
 export * from "./QueryMediaByIdArgs";
+export * from "./GraphQLContext";

@@ -1,0 +1,56 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Post API queries posts with author and media 1`] = `
+[
+  {
+    "author": {
+      "email": "testuser@gmail.com",
+      "id": "1",
+      "name": "Test User",
+    },
+    "authorId": 1,
+    "content": "Test content 1",
+    "id": "1",
+    "media": [
+      {
+        "filename": "abc1.jpg",
+        "height": 600,
+        "id": "1",
+        "mimetype": "png",
+        "url": "https://test.png",
+        "width": 800,
+      },
+      {
+        "duration": 800,
+        "filename": "abc1.mp4",
+        "id": "3",
+        "mimetype": "mp4",
+        "resolution": "500x500",
+        "url": "https://test.png",
+      },
+    ],
+    "title": "Test post 1",
+  },
+  {
+    "author": {
+      "email": "testuser@gmail.com",
+      "id": "1",
+      "name": "Test User",
+    },
+    "authorId": 1,
+    "content": "Test content 2",
+    "id": "2",
+    "media": [
+      {
+        "filename": "abc2.jpg",
+        "height": 600,
+        "id": "2",
+        "mimetype": "png",
+        "url": "https://test.png",
+        "width": 800,
+      },
+    ],
+    "title": "Test post 2",
+  },
+]
+`;

@@ -1,9 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { Client } from "../models";
-
-export interface GraphQLContext {
-  client?: Client;
-}
+import { GraphQLContext } from "../dtos";
 
 export async function createGraphQLContext({
   req,
