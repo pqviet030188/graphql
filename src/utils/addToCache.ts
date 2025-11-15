@@ -1,4 +1,4 @@
-import { GraphQLContext, GraphQLCacheToType } from "../dtos";
+import { GraphQLContext, GraphQLCacheToType } from "../types";
 
 export const addToCache = <
   K extends keyof GraphQLCacheToType,

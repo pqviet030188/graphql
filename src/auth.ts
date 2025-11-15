@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { Client } from "./models";
 import { Config } from "./config";
-import { RestClient, RestClientWithRefreshToken } from "./dtos";
+import { RestClient, RestClientWithRefreshToken } from "./types";
 
 declare global {
   namespace Express {

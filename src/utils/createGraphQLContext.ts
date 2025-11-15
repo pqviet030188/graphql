@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { GraphQLContext } from "../dtos";
+import { GraphQLContext } from "../types";
 
 export async function createGraphQLContext({
   req,

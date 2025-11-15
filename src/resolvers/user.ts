@@ -3,7 +3,7 @@ import {
   CreateUserMutationArgs,
   GraphQLContext,
   QueryUserByIdArgs,
-} from "../dtos";
+} from "../types";
 import { Post, User } from "../models";
 import { addToCache, hasManyGetEntities } from "../utils";
 import { Op } from "sequelize";

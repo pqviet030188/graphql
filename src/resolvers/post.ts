@@ -2,9 +2,9 @@ import {
   CreatePostMutationArgs,
   QueryPostByIdArgs,
   UpdatePostMutationArgs,
-} from "../dtos";
+} from "../types";
 import { Media, Post, User } from "../models";
-import { GraphQLContext } from "../dtos";
+import { GraphQLContext } from "../types";
 import { addToCache, belongsToGetEntity, hasManyGetEntities } from "../utils";
 import { Op } from "sequelize";
 

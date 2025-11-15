@@ -2,7 +2,7 @@ import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import { authMiddleware, getToken, getTokenFromRefreshToken } from "./auth";
 import path from "path";
-import { RestClientWithRefreshToken } from "./dtos";
+import { RestClientWithRefreshToken } from "./types";
 import { typeDefs } from "./schema";
 import { resolvers } from "./resolvers";
 

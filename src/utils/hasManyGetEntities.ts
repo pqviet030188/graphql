@@ -1,4 +1,4 @@
-import { GraphQLCacheToType, GraphQLContext } from "../dtos";
+import { GraphQLCacheToType, GraphQLContext } from "../types";
 import { addToCache } from "./addToCache";
 
 export const hasManyGetEntities = async <

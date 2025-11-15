@@ -2,9 +2,9 @@ import {
   CreateImageMutationArgs,
   CreateVideoMutationArgs,
   QueryMediaByIdArgs,
-} from "../dtos";
+} from "../types";
 import { Media, Post, User, Video, Image } from "../models";
-import { GraphQLContext } from "../dtos";
+import { GraphQLContext } from "../types";
 import { addToCache, belongsToGetEntity } from "../utils";
 import { Op } from "sequelize";
 
