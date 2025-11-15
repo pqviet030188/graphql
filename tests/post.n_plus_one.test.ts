@@ -260,3 +260,7 @@ describe("Post N+1 test", () => {
     expect(selectQueries.length).toBeLessThanOrEqual(3);
   });
 });
+
+afterAll(async () => {
+  await sequelize.close();
+});

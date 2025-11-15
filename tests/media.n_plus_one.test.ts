@@ -203,3 +203,7 @@ describe("Media N+1 test", () => {
     expect(selectQueries.length).toBeLessThanOrEqual(4);
   });
 });
+
+afterAll(async () => {
+  await sequelize.close();
+});

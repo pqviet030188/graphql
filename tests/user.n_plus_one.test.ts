@@ -112,3 +112,7 @@ describe("User N+1 test", () => {
     expect(selectQueries.length).toBeLessThanOrEqual(2);
   });
 });
+
+afterAll(async () => {
+  await sequelize.close();
+});

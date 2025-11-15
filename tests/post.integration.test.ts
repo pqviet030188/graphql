@@ -135,3 +135,7 @@ describe("Post API", () => {
     expect(response.body.data.posts).toMatchSnapshot();
   });
 });
+
+afterAll(async () => {
+  await sequelize.close();
+});

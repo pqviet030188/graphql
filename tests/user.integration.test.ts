@@ -73,3 +73,7 @@ describe("User API", () => {
     expect(response.body.data.users).toMatchSnapshot();
   });
 });
+
+afterAll(async () => {
+  await sequelize.close();
+});

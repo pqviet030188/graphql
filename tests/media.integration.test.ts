@@ -116,3 +116,7 @@ describe("Media API", () => {
     expect(response.body.data.createImage.height).toBe(300);
   });
 });
+
+afterAll(async () => {
+  await sequelize.close();
+});
