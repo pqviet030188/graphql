@@ -34,7 +34,7 @@ NODE_ENV=test
 
 This section documents practical optimizations and hardening you can apply to this GraphQL API to improve performance, security and operational governance when your database schema evolves.
 
-1) Apply sensible filtering, pagination (offset/limit) and index rules
+**1) Apply sensible filtering, pagination (offset/limit) and index rules**
 - Always expose filtering, sorting and pagination on list queries instead of returning full tables. Use arguments like `limit`, `offset` or cursor-based pagination.
 - Example (GraphQL):
 
@@ -46,7 +46,7 @@ type Query {
 
 - At the DB layer, ensure indexes support common filter and sort predicates (e.g. `authorId`, `createdAt`). Avoid large OFFSET scans in high-volume tables; prefer keyset/cursor pagination where possible.
 
-2) Apply query complexity rules (cost-based) and depth limits
+**2) Apply query complexity rules (cost-based) and depth limits**
 - Use graphql-query-complexity (createComplexityRule) plus graphql-depth-limit to bound expensive queries. Treat list fields specially: compute complexity as `perItemCost * requestedItems + baseCost` so clients can't cheaply request thousands of nested items.
 - Example complexity function for a paged list field:
 
@@ -61,7 +61,7 @@ complexity: ({ args, childComplexity }) => {
 
 - Use `onComplete` to log complexity metrics and tune `maximumComplexity` from real traffic.
 
-3) Field-based authorization using a schema directive
+**3) Field-based authorization using a schema directive**
 - Prefer declarative, field-level authorization so rules live close to the schema. Add an `@auth` directive and a transformer that wraps field resolvers and checks `context.user` and roles.
 
 Example SDL:
@@ -78,7 +78,7 @@ Implementation notes:
 - Use `@graphql-tools/utils` `mapSchema` and `getDirective` to wrap fields at schema build time. The wrapper should read `context.user` and check roles/permissions.
 - For dynamic rules, consider using a policy engine (OPA) or central RBAC service and cache decisions for short durations.
 
-4) Rate limiting to avoid DoS/abuse
+**4) Rate limiting to avoid DoS/abuse**
 - Apply rate limiting on the HTTP endpoint (e.g. `express-rate-limit` or `rate-limiter-flexible` backed by Redis for distributed systems). Configure limits per IP and, if available, per authenticated client id.
 
 Example (express-rate-limit):
@@ -135,13 +135,13 @@ Implementation notes
 - Expose rate-limit headers (X-RateLimit-Limit, X-RateLimit-Remaining, Retry-After) for clients and observability.
 
 
-5) Validate & sanitize inputs to avoid XSS / injection
+**5) Validate & sanitize inputs to avoid XSS / injection**
 - GraphQL itself separates query structure from data, but you must still validate and sanitize input values that may be rendered or stored. Common steps:
 	- Use strict input types and runtime validation (e.g. `Joi`, `zod`) for fields that contain HTML or markup.
 	- When rendering user-provided content in UIs, always escape or sanitize (DOMPurify on client or server-side sanitation for HTML).
 	- For SQL/ORM usage, prefer parameterized queries / ORM parameter binding (Sequelize, Prisma) and avoid string concatenation.
 
-6) Governance for DB & GraphQL schema migrations (versioning)
+**6) Governance for DB & GraphQL schema migrations (versioning)**
 
 Use a migration tool to track DB schema changes in source control. For this project (Sequelize + MySQL) the common choices are `sequelize-cli` or a programmatic runner like `umzug`. The lifecycle below describes safe, small, reversible steps.
 
