@@ -90,6 +90,51 @@ app.use('/graphql', limiter);
 
 - In addition to request rate, consider limits on complexity and depth (defense-in-depth). Emit metrics for rate-limit hits.
 
+Rate limiting approaches (Redis-backed)
+
+When you move from an in-memory limiter to a Redis-backed limiter for horizontal scaling, there are a few common implementation patterns. Two typical approaches:
+
+- Fixed window counter (simple, efficient)
+
+	- Store a counter per key with IP or client id as key in Redis, and with an expiry equal to the window length.
+	- On each request: read the counter (GET), if it's >= limit return 429; otherwise INCR the counter (or use INCRBY) and set the expiry when creating the key.
+	- Pros: very fast and simple. Cons: can be bursty at window boundaries (clients can send 2x limit across window edges).
+
+	Pseudo-commands (atomic with Lua or use `INCR` then `EXPIRE` when key was new):
+
+	```text
+	INCR rl:<client>:<window>
+	EXPIRE rl:<client>:<window> <windowSeconds>
+	```
+
+- Sliding window using a sorted set (more accurate)
+
+	- Use a Redis sorted set per key where the score is the request timestamp (ms). On each request, remove entries older than `now - window`, count remaining members (ZCOUNT), and if below the limit ZADD the current timestamp.
+	- Pros: smooth rate limiting (no boundary spike) and more accurate throttling. Cons: slightly more Redis commands and memory for stored timestamps.
+
+	Pseudo-commands (should be executed atomically via Lua):
+
+	```text
+	ZREMRANGEBYSCORE rl:<client> 0 <now - windowMs>
+	local count = ZCARD rl:<client>
+	if count >= LIMIT then return rate_limited end
+	ZADD rl:<client> <now> <uniqueId>
+	EXPIRE rl:<client> <windowSeconds>
+	return allowed
+	```
+
+- Use Lua scripting for atomicity and performance
+
+	- To avoid race conditions and extra round-trips, wrap the sequence of Redis commands above in a single Lua script (EVALSHA). This guarantees atomic execution and is what production-ready libraries do under the hood.
+	- `rate-limiter-flexible` and `rate-limit-redis` already implement robust patterns and optional Lua scripts; prefer a battle-tested library unless you have special requirements.
+
+Implementation notes
+
+- Decide the key: prefer authenticated client id when available, fallback to IP. Beware of shared NATs where IP-based limits can unfairly throttle users.
+- Decide fail-open vs fail-closed on Redis failures (fail-open is common to avoid blocking legitimate traffic but log/alert).
+- Expose rate-limit headers (X-RateLimit-Limit, X-RateLimit-Remaining, Retry-After) for clients and observability.
+
+
 5) Validate & sanitize inputs to avoid XSS / injection
 - GraphQL itself separates query structure from data, but you must still validate and sanitize input values that may be rendered or stored. Common steps:
 	- Use strict input types and runtime validation (e.g. `Joi`, `zod`) for fields that contain HTML or markup.
